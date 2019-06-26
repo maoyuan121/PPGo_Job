@@ -1,5 +1,5 @@
 /**********************************************
-** @Des: This file ...
+** @Des: 角色
 ** @Author: haodaquan
 ** @Date:   2017-09-14 15:24:51
 ** @Last Modified by:   haodaquan
@@ -11,23 +11,26 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+// 角色 Model
 type Role struct {
-	Id             int
-	RoleName       string
-	Detail         string
-	ServerGroupIds string
-	TaskGroupIds   string
-	Status         int
-	CreateId       int
-	UpdateId       int
-	CreateTime     int64
-	UpdateTime     int64
+	Id             int    // 主键
+	RoleName       string // 名称
+	Detail         string // 备注
+	ServerGroupIds string // 资源分组
+	TaskGroupIds   string // 任务分组
+	Status         int    // 状态 （0： 删除， 1：正常）
+	CreateId       int    // 创建人
+	UpdateId       int    // 更新人
+	CreateTime     int64  // 创建时间
+	UpdateTime     int64  // 更新时间
 }
 
+// 表名
 func (a *Role) TableName() string {
 	return TableName("uc_role")
 }
 
+// 查询
 func RoleGetList(page, pageSize int, filters ...interface{}) ([]*Role, int64) {
 	offset := (page - 1) * pageSize
 	list := make([]*Role, 0)
@@ -43,6 +46,7 @@ func RoleGetList(page, pageSize int, filters ...interface{}) ([]*Role, int64) {
 	return list, total
 }
 
+// 创建
 func RoleAdd(role *Role) (int64, error) {
 	id, err := orm.NewOrm().Insert(role)
 	if err != nil {
@@ -51,6 +55,7 @@ func RoleAdd(role *Role) (int64, error) {
 	return id, nil
 }
 
+// 根据 ID 获取
 func RoleGetById(id int) (*Role, error) {
 	r := new(Role)
 	err := orm.NewOrm().QueryTable(TableName("uc_role")).Filter("id", id).One(r)
@@ -60,6 +65,7 @@ func RoleGetById(id int) (*Role, error) {
 	return r, nil
 }
 
+// 更新
 func (r *Role) Update(fields ...string) error {
 	if _, err := orm.NewOrm().Update(r, fields...); err != nil {
 		return err

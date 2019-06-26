@@ -1,5 +1,5 @@
 /************************************************************
-** @Description: models
+** @Description: 禁用命令
 ** @Author: haodaquan
 ** @Date:   2018-06-10 19:51
 ** @Last Modified by:   haodaquan
@@ -13,18 +13,21 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+// 禁用命令代码
 type Ban struct {
-	Id         int
-	Code       string
-	CreateTime int64
-	UpdateTime int64
-	Status     int
+	Id         int    // 主键
+	Code       string // 禁用命令代码
+	CreateTime int64  // 创建时间
+	UpdateTime int64  // 更新时间
+	Status     int    // 状态 1：删除， 其他：正常
 }
 
+// 表名
 func (t *Ban) TableName() string {
 	return TableName("task_ban")
 }
 
+// 更新
 func (t *Ban) Update(fields ...string) error {
 	if t.Code == "" {
 		return fmt.Errorf("命令不能为空")
@@ -35,6 +38,7 @@ func (t *Ban) Update(fields ...string) error {
 	return nil
 }
 
+// 创建
 func BanAdd(obj *Ban) (int64, error) {
 	if obj.Code == "" {
 		return 0, fmt.Errorf("命令不能为空")
@@ -42,6 +46,7 @@ func BanAdd(obj *Ban) (int64, error) {
 	return orm.NewOrm().Insert(obj)
 }
 
+// 根据 ID 获取
 func BanGetById(id int) (*Ban, error) {
 	obj := &Ban{
 		Id: id,
@@ -53,11 +58,13 @@ func BanGetById(id int) (*Ban, error) {
 	return obj, nil
 }
 
+// 删除
 func BanDelById(id int) error {
 	_, err := orm.NewOrm().QueryTable(TableName("task_ban")).Filter("id", id).Delete()
 	return err
 }
 
+// 列表
 func BanGetList(page, pageSize int, filters ...interface{}) ([]*Ban, int64) {
 	offset := (page - 1) * pageSize
 	list := make([]*Ban, 0)

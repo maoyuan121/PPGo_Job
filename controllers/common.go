@@ -35,7 +35,8 @@ type BaseController struct {
 	taskGroups     string
 }
 
-//前期准备
+// Beego 这个函数主要是为了用户扩展用的，用户可以重写这个函数实现类似用户验证之类
+// 前期准备
 func (self *BaseController) Prepare() {
 	self.pageSize = 20
 	controllerName, actionName := self.GetControllerAndAction()
@@ -77,7 +78,9 @@ func (self *BaseController) Auth() {
 				self.dataAuth(user)
 			}
 
+			// 固定 home/index 不需要鉴权
 			isHasAuth := strings.Contains(self.allowUrl, self.controllerName+"/"+self.actionName)
+			// 不需要健全的 action name 和 controller name
 			noAuth := "ajaxsave/table/loginin/loginout/getnodes/start／apitask/apistart/apipause"
 			isNoAuth := strings.Contains(noAuth, self.actionName)
 
@@ -110,8 +113,8 @@ func (self *BaseController) dataAuth(user *models.Admin) {
 		return
 	}
 
-	Filters := make([]interface{}, 0)
-	Filters = append(Filters, "status", 1)
+	filters := make([]interface{}, 0)
+	filters = append(filters, "status", 1)
 
 	RoleIdsArr := strings.Split(user.RoleIds, ",")
 
@@ -121,9 +124,9 @@ func (self *BaseController) dataAuth(user *models.Admin) {
 		RoleIds = append(RoleIds, id)
 	}
 
-	Filters = append(Filters, "id__in", RoleIds)
+	filters = append(filters, "id__in", RoleIds)
 
-	Result, _ := models.RoleGetList(1, 1000, Filters...)
+	Result, _ := models.RoleGetList(1, 1000, filters...)
 	serverGroups := ""
 	taskGroups := ""
 	for _, v := range Result {

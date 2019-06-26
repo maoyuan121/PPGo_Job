@@ -1,5 +1,5 @@
 /************************************************************
-** @Description: models
+** @Description: 服务器
 ** @Author: haodaquan
 ** @Date:   2018-06-09 16:11
 ** @Last Modified by:   haodaquan
@@ -15,29 +15,32 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+// 服务器 Model
 type TaskServer struct {
-	Id            int
-	GroupId       int
-	ConnectionType int
-	ServerName    string
-	ServerAccount string
-	ServerOuterIp string
-	ServerIp      string
-	Port          int
-	Password      string
-	PrivateKeySrc string
-	PublicKeySrc  string
-	Type          int
-	Detail        string
-	CreateTime    int64
-	UpdateTime    int64
-	Status        int
+	Id             int    // 主键
+	GroupId        int    // 所属分组
+	ConnectionType int    // 连接类型（0：ssh，1：telnet）
+	ServerName     string // 名称
+	ServerAccount  string // 登录账号
+	ServerOuterIp  string // 外网 IP
+	ServerIp       string // 内网 IP
+	Port           int    // 端口
+	Password       string // 登录密码
+	PrivateKeySrc  string // 私钥地址
+	PublicKeySrc   string // 公钥地址
+	Type           int    // 登录类型（0：密码，1：密钥）
+	Detail         string // 备注
+	CreateTime     int64  // 创建时间
+	UpdateTime     int64  // 更新时间
+	Status         int    // 状态（0：正常，1：禁用）
 }
 
+// 表名
 func (t *TaskServer) TableName() string {
 	return TableName("task_server")
 }
 
+// 更新
 func (t *TaskServer) Update(fields ...string) error {
 	if t.ServerName == "" {
 		return fmt.Errorf("服务器名不能为空")
@@ -64,6 +67,7 @@ func (t *TaskServer) Update(fields ...string) error {
 	return nil
 }
 
+// 新增
 func TaskServerAdd(obj *TaskServer) (int64, error) {
 	if obj.ServerName == "" {
 		return 0, fmt.Errorf("服务器名不能为空")
@@ -86,6 +90,7 @@ func TaskServerAdd(obj *TaskServer) (int64, error) {
 	return orm.NewOrm().Insert(obj)
 }
 
+// 根据 ID 获取
 func TaskServerGetById(id int) (*TaskServer, error) {
 	obj := &TaskServer{
 		Id: id,
@@ -97,7 +102,7 @@ func TaskServerGetById(id int) (*TaskServer, error) {
 	return obj, nil
 }
 
-//
+// 根据 ID 集合获取
 func TaskServerGetByIds(ids string) ([]*TaskServer, int64) {
 
 	serverFilters := make([]interface{}, 0)
@@ -113,11 +118,13 @@ func TaskServerGetByIds(ids string) ([]*TaskServer, int64) {
 	return TaskServerGetList(1, 1000, serverFilters...)
 }
 
+// 删除
 func TaskServerDelById(id int) error {
 	_, err := orm.NewOrm().QueryTable(TableName("task_server")).Filter("id", id).Delete()
 	return err
 }
 
+// 查询
 func TaskServerGetList(page, pageSize int, filters ...interface{}) ([]*TaskServer, int64) {
 
 	offset := (page - 1) * pageSize

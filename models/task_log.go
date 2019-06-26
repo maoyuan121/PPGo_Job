@@ -1,4 +1,5 @@
 /*
+* Description: 任务日志
 * @Author: haodaquan
 * @Date:   2017-06-21 12:23:22
 * @Last Modified by:   haodaquan
@@ -11,16 +12,17 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+// 任务日志 Model
 type TaskLog struct {
-	Id          int
-	TaskId      int
-	ServerId    int
-	ServerName  string
-	Output      string
-	Error       string
-	Status      int
-	ProcessTime int
-	CreateTime  int64
+	Id          int    // 主键
+	TaskId      int    // 所属任务 ID
+	ServerId    int    // 发生在哪台服务器上 ID
+	ServerName  string // 发生在哪台服务器上 服务器名
+	Output      string // 执行输出
+	Error       string // 错误输出
+	Status      int    // 状态 （0：成功，-1：出错，-2：超时）
+	ProcessTime int    // 执行耗时
+	CreateTime  int64  // 创建时间
 }
 
 func (t *TaskLog) TableName() string {

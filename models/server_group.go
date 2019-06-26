@@ -1,5 +1,5 @@
 /************************************************************
-** @Description: models
+** @Description: 服务器分组
 ** @Author: haodaquan
 ** @Date:   2018-06-08 21:49
 ** @Last Modified by:   haodaquan
@@ -13,21 +13,24 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+// 服务器分组名
 type ServerGroup struct {
-	Id          int
-	CreateId    int
-	UpdateId    int
-	GroupName   string
-	Description string
-	CreateTime  int64
-	UpdateTime  int64
-	Status      int
+	Id          int    // 主键
+	CreateId    int    // 创建人
+	UpdateId    int    // 更新人
+	GroupName   string // 名称
+	Description string // 备注
+	CreateTime  int64  // 创建时间
+	UpdateTime  int64  // 更新时间
+	Status      int    // 状态 （0：删除，1：正常）
 }
 
+// 表名
 func (t *ServerGroup) TableName() string {
 	return TableName("task_server_group")
 }
 
+// 更新
 func (t *ServerGroup) Update(fields ...string) error {
 	if t.GroupName == "" {
 		return fmt.Errorf("组名不能为空")
@@ -38,6 +41,7 @@ func (t *ServerGroup) Update(fields ...string) error {
 	return nil
 }
 
+// 创建
 func ServerGroupAdd(obj *ServerGroup) (int64, error) {
 	if obj.GroupName == "" {
 		return 0, fmt.Errorf("组名不能为空")
@@ -45,6 +49,7 @@ func ServerGroupAdd(obj *ServerGroup) (int64, error) {
 	return orm.NewOrm().Insert(obj)
 }
 
+// 根据 ID 获取
 func TaskGroupGetById(id int) (*ServerGroup, error) {
 	obj := &ServerGroup{
 		Id: id,
@@ -56,11 +61,13 @@ func TaskGroupGetById(id int) (*ServerGroup, error) {
 	return obj, nil
 }
 
+// 删除
 func ServerGroupDelById(id int) error {
 	_, err := orm.NewOrm().QueryTable(TableName("task_server_group")).Filter("id", id).Delete()
 	return err
 }
 
+// 查询
 func ServerGroupGetList(page, pageSize int, filters ...interface{}) ([]*ServerGroup, int64) {
 	offset := (page - 1) * pageSize
 	list := make([]*ServerGroup, 0)

@@ -1,5 +1,5 @@
 /**********************************************
-** @Des: 权限因子
+** @Des: 权限 Model
 ** @Author: haodaquan
 ** @Date:   2017-09-09 20:50:36
 ** @Last Modified by:   haodaquan
@@ -13,26 +13,29 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+// 权限模型
 type Auth struct {
-	Id         int
-	AuthName   string
-	AuthUrl    string
-	UserId     int
-	Pid        int
-	Sort       int
-	Icon       string
-	IsShow     int
-	Status     int
-	CreateId   int
-	UpdateId   int
-	CreateTime int64
-	UpdateTime int64
+	Id         int    // 主键
+	AuthName   string // 权限名
+	AuthUrl    string // 菜单地址
+	UserId     int    // 最后创建或更新人
+	Pid        int    // 上级权限 ID
+	Sort       int    // 排序
+	Icon       string // 图标字体
+	IsShow     int    // 是否左侧导航栏显示
+	Status     int    // 状态 0 删除， 1 正常
+	CreateId   int    // 创建人
+	UpdateId   int    // 更新人
+	CreateTime int64  // 创建时间
+	UpdateTime int64  // 更新时间
 }
 
+// 表名
 func (a *Auth) TableName() string {
 	return TableName("uc_auth")
 }
 
+// 权限列表
 func AuthGetList(page, pageSize int, filters ...interface{}) ([]*Auth, int64) {
 	offset := (page - 1) * pageSize
 	list := make([]*Auth, 0)
@@ -49,6 +52,7 @@ func AuthGetList(page, pageSize int, filters ...interface{}) ([]*Auth, int64) {
 	return list, total
 }
 
+// 如果是超级管理员查所有的权限， 否则根据 authIds 查找
 func AuthGetListByIds(authIds string, userId int) ([]*Auth, error) {
 
 	list1 := make([]*Auth, 0)
@@ -70,10 +74,12 @@ func AuthGetListByIds(authIds string, userId int) ([]*Auth, error) {
 	return list1, err
 }
 
+// 创建权限
 func AuthAdd(auth *Auth) (int64, error) {
 	return orm.NewOrm().Insert(auth)
 }
 
+// 根据 ID 查找权限
 func AuthGetById(id int) (*Auth, error) {
 	a := new(Auth)
 
@@ -84,6 +90,7 @@ func AuthGetById(id int) (*Auth, error) {
 	return a, nil
 }
 
+// 更新权限
 func (a *Auth) Update(fields ...string) error {
 	if _, err := orm.NewOrm().Update(a, fields...); err != nil {
 		return err

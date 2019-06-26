@@ -1,5 +1,5 @@
 /**********************************************
-** @Des: This file ...
+** @Des: 角色拥有哪些权限关联模型
 ** @Author: haodaquan
 ** @Date:   2017-09-15 11:44:13
 ** @Last Modified by:   haodaquan
@@ -15,23 +15,28 @@ import (
 	"github.com/astaxie/beego/orm"
 )
 
+// 角色拥有哪些权限关联模型
 type RoleAuth struct {
-	AuthId int `orm:"pk"`
-	RoleId int64
+	AuthId int   `orm:"pk"` // 权限主键
+	RoleId int64 ``         // 角色主键
 }
 
+// 表名
 func (ra *RoleAuth) TableName() string {
 	return TableName("uc_role_auth")
 }
 
+// 创建
 func RoleAuthAdd(ra *RoleAuth) (int64, error) {
 	return orm.NewOrm().Insert(ra)
 }
 
+// 批量创建
 func RoleAuthBatchAdd(ras *[]RoleAuth) (int64, error) {
 	return orm.NewOrm().InsertMulti(100, ras)
 }
 
+// 根据角色获取其拥有的权限
 func RoleAuthGetById(id int) ([]*RoleAuth, error) {
 	list := make([]*RoleAuth, 0)
 	query := orm.NewOrm().QueryTable(TableName("uc_role_auth"))
@@ -42,13 +47,14 @@ func RoleAuthGetById(id int) ([]*RoleAuth, error) {
 	return list, nil
 }
 
+// 删除某个角色拥有的所有权限
 func RoleAuthDelete(id int) (int64, error) {
 	_, err := orm.NewOrm().Raw("DELETE FROM `pp_uc_role_auth` WHERE `role_id` = ?",
 		strconv.Itoa(id)).Exec()
 	return 0, err
 }
 
-//获取多个
+// 获取这些角色拥有的所有的权限的 ID
 func RoleAuthGetByIds(RoleIds string) (Authids string, err error) {
 	list := make([]*RoleAuth, 0)
 	query := orm.NewOrm().QueryTable(TableName("uc_role_auth"))
@@ -68,6 +74,7 @@ func RoleAuthGetByIds(RoleIds string) (Authids string, err error) {
 	return Authids, nil
 }
 
+// 批量新增权限
 func RoleAuthMultiAdd(ras []*RoleAuth) (n int, err error) {
 	query := orm.NewOrm().QueryTable(TableName("uc_role_auth"))
 	i, _ := query.PrepareInsert()
