@@ -16,7 +16,7 @@ import (
 	"strconv"
 
 	"github.com/astaxie/beego"
-	"github.com/george518/PPGo_Job/models"
+	"PPGo_Job/models"
 )
 
 type GroupController struct {

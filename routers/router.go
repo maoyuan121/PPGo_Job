@@ -2,7 +2,7 @@ package routers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/george518/PPGo_Job/controllers"
+	"PPGo_Job/controllers"
 )
 
 func init() {

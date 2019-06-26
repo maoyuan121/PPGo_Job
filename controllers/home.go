@@ -9,9 +9,9 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/george518/PPGo_Job/jobs"
-	"github.com/george518/PPGo_Job/libs"
-	"github.com/george518/PPGo_Job/models"
+	"PPGo_Job/jobs"
+	"PPGo_Job/libs"
+	"PPGo_Job/models"
 	"runtime"
 	//"strconv"
 	"time"

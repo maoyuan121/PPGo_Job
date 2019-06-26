@@ -9,7 +9,7 @@ package controllers
 
 import (
 	"fmt"
-	"github.com/george518/PPGo_Job/models"
+	"PPGo_Job/models"
 	"golang.org/x/crypto/ssh"
 	"io/ioutil"
 	"net"

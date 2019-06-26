@@ -8,7 +8,7 @@
 package controllers
 
 import (
-	"github.com/george518/PPGo_Job/models"
+	"PPGo_Job/models"
 	"strings"
 	"time"
 	"github.com/astaxie/beego"
