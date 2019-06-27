@@ -80,7 +80,7 @@ func (self *BaseController) Auth() {
 
 			// 固定 home/index 不需要鉴权
 			isHasAuth := strings.Contains(self.allowUrl, self.controllerName+"/"+self.actionName)
-			// 不需要健全的 action name 和 controller name
+			// 不需要鉴权的 action name 和 controller name
 			noAuth := "ajaxsave/table/loginin/loginout/getnodes/start／apitask/apistart/apipause"
 			isNoAuth := strings.Contains(noAuth, self.actionName)
 

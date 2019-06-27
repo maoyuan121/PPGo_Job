@@ -413,7 +413,7 @@ func (self *TaskController) AjaxPause() {
 
 }
 
-// 立即执行
+// 立即执行 job， 根据任务创建对应的在其关联的服务器上创建 job，并运行
 func (self *TaskController) AjaxRun() {
 	id, _ := self.GetInt("id")
 	task, err := models.TaskGetById(id)

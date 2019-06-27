@@ -8,6 +8,7 @@
 package jobs
 
 import (
+	"PPGo_Job/libs"
 	"bytes"
 	"fmt"
 	"io/ioutil"
@@ -20,11 +21,10 @@ import (
 	"strconv"
 	"strings"
 
-	"encoding/json"
-	"github.com/astaxie/beego"
-	"github.com/axgle/mahonia"
 	"PPGo_Job/models"
 	"PPGo_Job/notify"
+	"encoding/json"
+	"github.com/astaxie/beego"
 	"github.com/linxiaozhi/go-telnet"
 	"github.com/pkg/errors"
 	"golang.org/x/crypto/ssh"
@@ -34,8 +34,8 @@ type Job struct {
 	jobKey     int                                               // jobId = id*10000+serverId
 	id         int                                               // taskID
 	logId      int64                                             // 日志记录ID
-	serverId   int                                               //服务器信息
-	serverName string                                            //服务器名称
+	serverId   int                                               // 服务器信息
+	serverName string                                            // 服务器名称
 	name       string                                            // 任务名称
 	task       *models.Task                                      // 任务对象
 	runFunc    func(time.Duration) (string, string, error, bool) // 执行函数
@@ -75,6 +75,8 @@ func NewJobFromTask(task *models.Task) ([]*Job, error) {
 				continue
 			}
 
+			// connectionType 0: ssh, 1: telnet
+			// type 0: 密码， 1：密钥
 			if server.ConnectionType == 0 {
 				if server.Type == 0 {
 					//密码验证登录服务器
@@ -109,6 +111,7 @@ func NewJobFromTask(task *models.Task) ([]*Job, error) {
 	return jobArr, nil
 }
 
+// 本地执行的任务 （windows | linux）
 func NewCommandJob(id int, serverId int, name string, command string) *Job {
 	job := &Job{
 		id:   id,
@@ -131,12 +134,12 @@ func NewCommandJob(id int, serverId int, name string, command string) *Job {
 		cmd.Start()
 		err, isTimeout := runCmdWithTimeout(cmd, timeout)
 
-		return gbkAsUtf8(bufOut.String()), gbkAsUtf8(bufErr.String()), err, isTimeout
+		return libs.GbkAsUtf8(bufOut.String()), libs.GbkAsUtf8(bufErr.String()), err, isTimeout
 	}
 	return job
 }
 
-//远程执行任务 密钥验证
+// 远程执行任务 密钥验证 SSH
 func RemoteCommandJob(id int, serverId int, name string, command string, servers *models.TaskServer) *Job {
 	job := &Job{
 		id:       id,
@@ -201,6 +204,7 @@ func RemoteCommandJob(id int, serverId int, name string, command string, servers
 	return job
 }
 
+// 远程执行任务 密码 SSH
 func RemoteCommandJobByPassword(id int, serverId int, name string, command string, servers *models.TaskServer) *Job {
 	var (
 		auth         []ssh.AuthMethod
@@ -260,6 +264,7 @@ func RemoteCommandJobByPassword(id int, serverId int, name string, command strin
 	return job
 }
 
+// 远程执行任务 telnet 密码
 func RemoteCommandJobByTelnetPassword(id int, serverId int, name string, command string, servers *models.TaskServer) *Job {
 
 	job := &Job{
@@ -279,7 +284,7 @@ func RemoteCommandJobByTelnetPassword(id int, serverId int, name string, command
 
 		defer conn.Close()
 
-		buf := make([]byte, 4096)
+		buf := make([]byte, 1024 * 4)
 
 		if _, err = conn.Read(buf); err != nil {
 			return "", "", err, false
@@ -301,7 +306,7 @@ func RemoteCommandJobByTelnetPassword(id int, serverId int, name string, command
 			return "", "", err, false
 		}
 
-		loginStr := gbkAsUtf8(string(buf[:]))
+		loginStr := libs.GbkAsUtf8(string(buf[:]))
 		if !strings.Contains(loginStr, ">") {
 			return "", "", errors.Errorf("Login failed!"), false
 		}
@@ -317,11 +322,11 @@ func RemoteCommandJobByTelnetPassword(id int, serverId int, name string, command
 
 			n, err = conn.Read(buf)
 
-			out = out + gbkAsUtf8(string(buf[0:n]))
+			out = out + libs.GbkAsUtf8(string(buf[0:n]))
 			if err != nil ||
 				strings.Contains(out, "'"+c+"' is not recognized as an internal or external command") ||
 				strings.Contains(out, "'"+c+"' 不是内部或外部命令，也不是可运行的程序") {
-				return out, "", fmt.Errorf(gbkAsUtf8(string(buf[0:n]))), false
+				return out, "", fmt.Errorf(libs.GbkAsUtf8(string(buf[0:n]))), false
 			}
 		}
 
@@ -573,15 +578,7 @@ func AllAdminInfo(adminIds string) []*adminInfo {
 	return adminInfos
 }
 
-func gbkAsUtf8(str string) string {
-	srcDecoder := mahonia.NewDecoder("gbk")
-	desDecoder := mahonia.NewDecoder("utf-8")
-	resStr := srcDecoder.ConvertString(str)
-	_, resBytes, _ := desDecoder.Translate([]byte(resStr), true)
-	return string(resBytes)
-}
-
 //任务识别码
 func jobKey(taskId, serverId int) int {
-	return taskId*10000 + serverId
+	return taskId * 10000 + serverId
 }
