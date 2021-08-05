@@ -16,14 +16,19 @@ import (
 )
 
 func InitJobs() {
+	// 先从数据库里面把 Task 都拿出来
 	list, _ := models.TaskGetList(1, 1000000, "status", 1)
+
+	// 遍历 Tasks
 	for _, task := range list {
+		// 依据任务的配置生成 Job 集合
 		jobs, err := NewJobFromTask(task)
 		if err != nil {
 			beego.Error("InitJobs:", err.Error())
 			continue
 		}
 
+		// 编辑集合
 		for _, job := range jobs {
 			AddJob(task.CronSpec, job)
 		}

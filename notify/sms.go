@@ -40,13 +40,13 @@ func init() {
 	go func() {
 		for {
 			select {
-			case m, ok := <-SmsChan:
-				if !ok {
-					return
-				}
-				if err := m.SendSms(); err != nil {
-					beego.Error("SendSms:", err.Error())
-				}
+				case m, ok := <-SmsChan:
+					if !ok {
+						return
+					}
+					if err := m.SendSms(); err != nil {
+						beego.Error("SendSms:", err.Error())
+					}
 			}
 		}
 	}()

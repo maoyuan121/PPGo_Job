@@ -54,6 +54,7 @@ func (self *LoginController) LoginIn() {
 				user.Update()
 				authkey := libs.Md5([]byte(self.getClientIp() + "|" + user.Password + user.Salt))
 				self.Ctx.SetCookie("auth", strconv.Itoa(user.Id)+"|"+authkey, 7*86400)
+				// 用户ID|MD5(IP|PWD+Salt)
 
 				self.ajaxMsg("登录成功", MSG_OK)
 			}
